@@ -424,6 +424,7 @@ export function PrizeJudgeApp() {
                 prize <strong>{fmtGen(c.prize)} GEN</strong>
                 {settled ? ` · paid to ${short(c.paid_to)}` : " · held by the contract"} · organizer{" "}
                 {short(c.organizer)} · entries close {utc(c.entries_close_at)} · rounds ≥ {span(c.judge_interval)} apart
+                {s && <> · judging deadline {utc(s.expires_at)} (judge only before it, expire only from it)</>}
               </p>
               <div className="outcomes">
                 {list.map((e) => (
@@ -458,7 +459,11 @@ export function PrizeJudgeApp() {
                   disabled={disabled || (s ? !s.can_judge : false)}
                   onClick={() => void run("judge", () => judge(acct, provider, c.contest_id, onStage))}
                 >
-                  {s && !s.can_judge ? `next round from ${utc(c.next_round_at)}` : "run a judging round"}
+                  {s?.can_expire
+                    ? "judging deadline passed · only expire is accepted"
+                    : s && !s.can_judge
+                      ? `next round from ${utc(c.next_round_at)}`
+                      : "run a judging round"}
                 </button>
               )}
               {s?.can_expire && (
