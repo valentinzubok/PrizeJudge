@@ -1,6 +1,6 @@
 /** Live PrizeJudge deploy on GenLayer Studio Dev (chain 61997). Override via env. */
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_PRIZEJUDGE_ADDRESS ||
-  "0xa755846E9f9e9120E44ddbee7a99B217c1c0A7eD") as `0x${string}`;
+  "0xAdf0E11eC8Db4E0B4315182Ac78879a671cEf66a") as `0x${string}`;
 
 /** Studio Dev / Studio Next — chain ID 61997. */
 export const CHAIN_ID = 61997;

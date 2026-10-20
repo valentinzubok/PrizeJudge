@@ -50,8 +50,10 @@ judge(contest_id)                       anyone; takes a contest id and nothing e
       rounds_required agreeing rounds -> FINAL: the prize goes to that entrant's wallet
                                          (or back to the organizer if the answer is none)
 
-expire(contest_id)                      anyone, after the committed judging deadline:
+expire(contest_id)                      anyone, AT or after the committed judging deadline:
                                         an unresolved contest returns the prize
+      judge is accepted only BEFORE the deadline and expire only AT or after it: the two
+      never overlap, so transaction ordering cannot choose between payout and refund
 withdraw_credit()                       take back what open_contest refused to escrow
 ```
 
@@ -72,7 +74,8 @@ failure **reverts the transaction**.
 | `"0"`, `true`, `0.0` or a name counted as an answer | `literal_index()` accepts only a JSON integer inside the entry list; `null` means none. Anything else reverts. |
 | A refused contest strands its prize | Value attached to a reverting call is not returned on this network, so `open_contest` never raises once value is attached; the amount is credited. |
 | A payout that pays nobody | Wallets are paid by an external transfer, after the books are updated. |
-| A contest nobody judges | `expire` returns the prize after the committed deadline. |
+| A contest nobody judges | `expire` returns the prize at the committed deadline. |
+| A race at the deadline between a late round and a refund | The deadline splits time in two: `judge` only before it, `expire` only at or after it, and `get_schedule` never offers both. A late round is refused before any model call. |
 
 ## Live
 
@@ -80,7 +83,7 @@ failure **reverts the transaction**.
 |---|---|
 | Console | **https://valentinzubok.github.io/PrizeJudge/** (reads work with no wallet) |
 | Network | GenLayer Studio Dev / Studio Next — chain `61997` |
-| Contract | [`0xa755846E9f9e9120E44ddbee7a99B217c1c0A7eD`](https://explorer-studio-dev.genlayer.com/address/0xa755846E9f9e9120E44ddbee7a99B217c1c0A7eD) |
+| Contract | [`0xAdf0E11eC8Db4E0B4315182Ac78879a671cEf66a`](https://explorer-studio-dev.genlayer.com/address/0xAdf0E11eC8Db4E0B4315182Ac78879a671cEf66a) |
 | Deploy record | [`STUDIO_DEV_DEPLOY.md`](STUDIO_DEV_DEPLOY.md) — every transaction of the demo, including the refused ones |
 
 ## Lint
@@ -114,7 +117,7 @@ npm run dev      # http://localhost:3020
 
 ```bash
 pip install -r requirements-dev.txt
-python3 -m pytest -q      # 60 tests
+python3 -m pytest -q      # 66 tests
 ```
 
 [`tests/test_prizejudge.py`](tests/test_prizejudge.py): agreeing rounds award the prize, a
